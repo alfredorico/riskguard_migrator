@@ -1,0 +1,36 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  username: <%= ENV['DB_USUARIO_RISKGUARD'] || 'riskguard' %>
+  password: <%= ENV['DB_PASSWORD_RISKGUARD'] || 'riskguard' %>
+  host: localhost
+  port: 5432
+  pool: 5
+default_riskguard2: &default_riskguard2
+  adapter: postgresql
+  encoding: unicode
+  username: riskguard
+  password: riskguard
+  host: localhost
+  port: 5432
+  pool: 5
+riskguard2:
+  development:
+    <<: *default_riskguard2
+    database: riskguard2_development
+  test:
+    <<: *default_riskguard2
+    database: riskguard2_test
+  production:
+    <<: *default_riskguard2
+    database: riskguard2_production
+riskguard_legacy:
+  development:
+    <<: *default
+    database: riskguard_development
+  test:
+    <<: *default
+    database: riskguard_test
+  production:
+    <<: *default
+    database: <%= ENV['DB_RISKGUARD'] || 'riskguard_production' %>

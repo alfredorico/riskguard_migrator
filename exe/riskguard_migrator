@@ -1,0 +1,40 @@
+#!/usr/bin/env ruby
+raise ArgumentError, "Debe definir RAILS_ENV" unless ENV['RAILS_ENV']
+require 'optparse'
+parametros_migracion = {}
+OptionParser.new do |opts|
+  opts.banner = "Uso: riskguard_migrator [parametros_migracion]"
+
+  opts.on("-i", "Incluyendo el listado archivos planos del proceso de carga") do
+    parametros_migracion[:criterio_seleccion_archivos_planos] = :inclusion
+  end
+
+  opts.on("-e", "Excluyendo el listado archivos planos del proceso de carga") do
+    parametros_migracion[:criterio_seleccion_archivos_planos] = :exclusion
+  end
+
+  opts.on("-t", 'Migrar una o mas tablas en especifico') do
+    parametros_migracion[:criterio_seleccion_archivos_planos] = :tablas_especificas
+  end
+
+  opts.on("-d DB",'Nombre de la base de datos Riskguard existente') do |db_riskguard_legacy|
+    parametros_migracion[:db_riskguard_legacy] = db_riskguard_legacy
+  end
+
+  opts.on("-u USUARIO", 'Usuario de la base de datos Riskguard existente') do |usuario_riskguard_legacy|
+    parametros_migracion[:usuario_riskguard_legacy] = usuario_riskguard_legacy
+  end
+
+  opts.on("-p PASSWORD", 'Password de la base de datos Riskguard existente') do |password_riskguard_legacy|
+    parametros_migracion[:password_riskguard_legacy] = password_riskguard_legacy
+  end
+    
+end.parse!
+
+if parametros_migracion.key?(:criterio_seleccion_archivos_planos) and ARGV.empty?
+  puts "Debe suministrar el listado de archivos planos"
+  exit(1)
+end
+
+require 'riskguard_migrator'
+RiskguardMigrator.ejecutar_migracion(parametros_migracion.merge({archivos_planos_introducidos: ARGV}))
